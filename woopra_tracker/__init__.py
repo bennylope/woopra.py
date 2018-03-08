@@ -64,9 +64,10 @@ from __future__ import unicode_literals
 
 __author__ = """Ben Lopatin"""
 __email__ = 'ben@benlopatin.com'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __license__ = 'MIT'
 
+import logging
 import requests
 
 
@@ -88,6 +89,7 @@ def get_client_ip(request):
 
 class WoopraTracker(object):
     """
+
     """
     SDK_ID = "woopra.py"
     api_domain = "https://www.woopra.com"
@@ -99,7 +101,6 @@ class WoopraTracker(object):
                  cookie_name=default_cookie_name,
                  idle_timeout=300000,
                  ip_address=None,
-                 ignore_query_url=True,
                  user_agent=None,
                  user=None,
                  **kwargs):
@@ -112,7 +113,6 @@ class WoopraTracker(object):
             cookie_name: name of cookie
             idle_timeout: duration until user session considered idle (seconds)
             ip_address: IP address of the *user*
-            ignore_query_url: ignore query params in page URL?
             user_agent: name of user agent
             user: dictionary of user info
             **kwargs:
@@ -125,7 +125,6 @@ class WoopraTracker(object):
         self.cookie_name = cookie_name
         self.idle_timeout = idle_timeout
         self.ip_address = ip_address
-        self.ignore_query_url = ignore_query_url
         self.user_agent = user_agent
         self.user = user or {}
 
@@ -134,6 +133,31 @@ class WoopraTracker(object):
                 setattr(self, k, v)
 
         self.session = requests.Session()
+
+    def data(self):
+        """
+        Returns the core data
+
+        This allows a tracker to be set up and executed in an asyncronous task
+        by initializing an out-of-request WoopraTracker instance.
+
+        E.g. if `track_woopra` is a delayable task function::
+
+            @task
+            def track_woopra(event, woopra_data, **params):
+                woopra = woopra_tracker.client(**woopra_data)
+                woopra.track(event, **params)
+
+        Then this can be called from a Django view, for example, like so::
+
+            woopra = woopra_tracker.django(request)
+            track_woopra.delay(woopra.data)
+
+        """
+        return {
+            k: v for k, v in self.__dict__.items()
+            if k not in ['session']
+        }
 
     def identify(self, **kwargs):
         """
