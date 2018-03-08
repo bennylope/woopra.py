@@ -35,10 +35,6 @@ To identify the user to Woopra::
 Event tracking
 ==============
 
-Track a page view::
-
->>> woopra.track()
-
 Track an event::
 
 >>> woopra.track('purchase')
@@ -219,11 +215,27 @@ def client(**kwargs):
     return WoopraTracker(**kwargs)
 
 
-def django(request, **kwargs):
-    """Interface for building a client instance from a Django HttpRequest"""
-    user = {
-        'email': request.user.email,
-    }
+def django(request, user_func=None, **kwargs):
+    """
+    Initialize a WoopraTracker instance from a Django view
+
+    Args:
+        request: the Django HttpRequest
+        user_func: a callable that accepts a request and returns a dictionary;
+                this is useful if you have values you want to extract from
+                other field names or a user profile, for example.
+        **kwargs: any additonal WoopraTracker values to set
+
+    Returns:
+        the WoopraTracker instance
+
+    """
+    if user_func:
+        user = user_func(request)
+    else:
+        user = {
+            'email': request.user.email,
+        }
     default_kwargs = {
         'domain': request.META['HTTP_HOST'],
         'ip_address': get_client_ip(request),
