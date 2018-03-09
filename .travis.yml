@@ -1,0 +1,16 @@
+language: python
+python:
+- 3.6
+- 2.7
+install: pip install -U tox-travis
+script: tox
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: bennylope
+  password:
+    secure: nPUoBbsoVBqeRZbrvZ9JrN0tPamGFEwiUHvvUxLNk0/a+Nc91yZAw34xiaN9qk3B9oYSBlr1gZC8Qd4R+lC+GqXmESNEfS21yE3WBoZeDIgZoVN2UgFpB7oNxJQ9m8n0shRatdtCPbkRH89QFNfOYaEm0Bbk6F7NSEs20Jm7bv5b0St1FpaD3nr+nPaAo/wI/nOEPXEl3oecWs0VU9i6dN48RXjfVwQ71OqQB7KLZBS/fhB56VAT3+vFxrqLhccLwygUDCYIFLS7EK9+RgbeikzawIw9kOopg91cnh+3JJuAuUVNYPNsIYm29RWL/nQEsH/R7BmVfOlsn8ER2ezge2P2OVGuJuRQiC7jMjX5e91bUxdJqVtDcy+swRfK6g9vljKDaOPKlEZuA7pHUwf2he8ulYkN+sUP1c53cyUT5z0tIdL5cuPBIy/jQ/36E0DmRdslczY/Gap9J4P3wJeUYiqmtV0yP1xldgykjDkamyO8vsWTIMKmmxMOQ4VTOfb1mdM+ib/M/30I6uNqdDt6j9Bvd6pYL6Q5kWukDALMEvhMHHplg4CLkBt5FkFAhT1LL91uNVfI756bSnfv1zfhAXHxq8jLPHUVh4cWrvS5TLp7CWPFy1haVt7B0jpZAPDwnXuLnP4QSCHZ2gd2mcKLzAMlpo2ngRZFHT+/CHKgbSE=
+  on:
+    tags: true
+    repo: bennylope/woopra
+    python: 3.6

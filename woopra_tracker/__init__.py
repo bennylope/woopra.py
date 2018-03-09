@@ -71,6 +71,9 @@ import logging
 import requests
 
 
+logger = logging.getLogger("woopra_tracker")
+
+
 def get_client_ip(request):
     """
 
@@ -257,14 +260,14 @@ def django(request, user_func=None, **kwargs):
     if user_func:
         user = user_func(request)
     else:
-        user = {
-            'email': request.user.email,
-        }
+        try:
+            user = {'email': request.user.email}
+        except AttributeError:
+            user = {}
     default_kwargs = {
         'domain': request.META['HTTP_HOST'],
         'ip_address': get_client_ip(request),
-        'cookie': request.COOKIES.get(WoopraTracker.default_cookie_name, ""),
+        'cookie': request.COOKIES.get(WoopraTracker.default_cookie_name, None),
     }
     default_kwargs.update(kwargs)
     return WoopraTracker(user=user, **default_kwargs)
-
